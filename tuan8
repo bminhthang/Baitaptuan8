@@ -1,0 +1,93 @@
+#include <iostream>
+
+struct Node {
+    int coefficient;  // Hệ số
+    int exponent;     // Bậc
+    Node* next;      // Con trỏ tới phần tử tiếp theo
+
+    Node(int coeff, int exp) : coefficient(coeff), exponent(exp), next(nullptr) {}
+};
+
+class Polynomial {
+private:
+    Node* head;  // Con trỏ tới đầu danh sách móc nối
+
+public:
+    Polynomial() : head(nullptr) {}
+
+    // Hàm thêm hệ số vào đa thức
+    void addTerm(int coefficient, int exponent) {
+        if (coefficient == 0) return;  // Không thêm hệ số 0
+
+        Node* newNode = new Node(coefficient, exponent);
+        newNode->next = head;
+        head = newNode;
+    }
+
+    // Hàm in đa thức, bao gồm bậc 0
+    void print() const {
+        Node* current = head;
+        bool isFirst = true;  // Biến để kiểm tra phần tử đầu tiên
+        bool hasNonZeroTerm = false; // Kiểm tra có phần tử nào khác 0
+
+        while (current != nullptr) {
+            if (current->coefficient != 0) {
+                hasNonZeroTerm = true;
+                if (!isFirst) {
+                    std::cout << " + ";  // Thêm dấu cộng trước các phần tử sau
+                }
+                if (current->exponent == 0) {
+                    std::cout << current->coefficient; // In hệ số nếu bậc 0
+                } else {
+                    std::cout << current->coefficient << "x^" << current->exponent; // In hệ số và bậc
+                }
+                isFirst = false;
+            }
+            current = current->next;
+        }
+        if (!hasNonZeroTerm) {
+            std::cout << "0";  // Nếu không có phần tử nào, in 0
+        }
+        std::cout << std::endl;
+    }
+
+    // Hàm giải phóng bộ nhớ
+    ~Polynomial() {
+        Node* current = head;
+        while (current != nullptr) {
+            Node* temp = current;
+            current = current->next;
+            delete temp;  // Giải phóng từng nút
+        }
+    }
+};
+
+void inputPolynomial(Polynomial& poly) {
+    int coefficient, exponent;
+
+    while (true) {
+        std::cout << "Nhap he so (hoac '0' de ket thuc): ";
+        std::cin >> coefficient;
+        std::cout << "Nhap bac (hoac '0' de ket thuc): ";
+        std::cin >> exponent;
+
+        // Kiểm tra điều kiện dừng
+        if (coefficient == 0 && exponent == 0) {
+            break;  // Kết thúc khi nhập 00
+        }
+
+        poly.addTerm(coefficient, exponent);
+    }
+}
+
+int main() {
+    Polynomial poly;
+
+    std::cout << "Nhap da thuc:\n";
+    inputPolynomial(poly);
+
+    std::cout << "Da thuc: ";
+    poly.print(); // In đa thức
+
+    return 0;
+}
